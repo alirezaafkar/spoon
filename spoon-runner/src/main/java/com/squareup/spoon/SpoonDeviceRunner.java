@@ -578,7 +578,9 @@ public final class SpoonDeviceRunner {
 
   private void cleanScreenshotsDirectoriesOnDevice(IDevice device) throws Exception {
     FileEntry externalScreenShotDir = getDirectoryOnExternalStorage(device, DEVICE_SCREENSHOT_DIR);
+    FileEntry externalPicturesDir = getDirectoryOnExternalStorage(device, DEVICE_PICTURES_DIR);
     cleanDirectoryOnDevice(externalScreenShotDir.getFullPath(), device);
+    cleanDirectoryOnDevice(externalPicturesDir.getFullPath(), device);
 
     FileEntry internalScreenShotDir = getDirectoryOnInternalStorage(DEVICE_SCREENSHOT_DIR);
     cleanDirectoryOnDevice(internalScreenShotDir.getFullPath(), device);
