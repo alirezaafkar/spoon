@@ -1,5 +1,17 @@
 package com.squareup.spoon;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.squareup.spoon.DeviceTestResult.Status;
+import static com.squareup.spoon.SpoonInstrumentationInfo.parseFromFile;
+import static com.squareup.spoon.SpoonLogger.logDebug;
+import static com.squareup.spoon.SpoonLogger.logInfo;
+import static com.squareup.spoon.internal.Constants.SPOON_FILES;
+import static com.squareup.spoon.internal.Constants.SPOON_SCREENSHOTS;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.synchronizedSet;
+
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.ITestRunListener;
@@ -24,16 +36,6 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.squareup.spoon.DeviceTestResult.Status;
-import static com.squareup.spoon.SpoonInstrumentationInfo.parseFromFile;
-import static com.squareup.spoon.SpoonLogger.logDebug;
-import static com.squareup.spoon.SpoonLogger.logInfo;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.synchronizedSet;
 
 /** Represents a collection of devices and the test configuration to be executed. */
 public final class SpoonRunner {
@@ -65,6 +67,8 @@ public final class SpoonRunner {
   private final boolean grantAll;
   private final boolean singleInstrumentationCall;
   private final boolean clearAppDataBeforeEachTest;
+  private final String pullFilesDir;
+  private final String pullScreenshotsDir;
 
   private SpoonRunner(String title, File androidSdk, File testApk, List<File> otherApks,
       File output, boolean debug, boolean noAnimations, Duration adbTimeout, Set<String> serials,
@@ -72,7 +76,8 @@ public final class SpoonRunner {
       String className, String methodName, IRemoteAndroidTestRunner.TestSize testSize,
       boolean allowNoDevices, List<ITestRunListener> testRunListeners, boolean sequential,
       File initScript, boolean grantAll, boolean terminateAdb, boolean codeCoverage,
-      boolean singleInstrumentationCall, boolean clearAppDataBeforeEachTest) {
+      boolean singleInstrumentationCall, boolean clearAppDataBeforeEachTest,
+      String pullFilesDir, String pullScreenshotsDir) {
     this.title = title;
     this.androidSdk = androidSdk;
     this.otherApks = otherApks;
@@ -96,6 +101,8 @@ public final class SpoonRunner {
     this.grantAll = grantAll;
     this.singleInstrumentationCall = singleInstrumentationCall;
     this.clearAppDataBeforeEachTest = clearAppDataBeforeEachTest;
+    this.pullFilesDir = pullFilesDir;
+    this.pullScreenshotsDir = pullScreenshotsDir;
 
     if (sequential) {
       this.threadExecutor = Executors.newSingleThreadExecutor();
@@ -298,7 +305,7 @@ public final class SpoonRunner {
     return new SpoonDeviceRunner(testApk, otherApks, output, serial, shardIndex, numShards, debug,
         noAnimations, adbTimeout, testInfo, instrumentationArgs, className, methodName, testSize,
         testRunListeners, codeCoverage, grantAll, singleInstrumentationCall,
-        clearAppDataBeforeEachTest);
+        clearAppDataBeforeEachTest, pullFilesDir, pullScreenshotsDir);
   }
 
   /** Build a test suite for the specified devices and configuration. */
@@ -327,6 +334,8 @@ public final class SpoonRunner {
     private boolean shard = false;
     private boolean singleInstrumentationCall = false;
     private boolean clearAppDataBeforeEachTest = false;
+    private String pullFilesDir = CliArgs.DEFAULT_PULL_FILES_DIR;
+    private String pullScreenshotsDir = CliArgs.DEFAULT_PULL_SCREENSHOTS_DIR;
 
     /** Identifying title for this execution. */
     public Builder setTitle(String title) {
@@ -473,6 +482,16 @@ public final class SpoonRunner {
         return this;
     }
 
+    public Builder setPullFilesDir(String dir) {
+      this.pullFilesDir = dir;
+      return this;
+    }
+
+    public Builder setPullScreenshotsDir(String dir) {
+      this.pullScreenshotsDir = dir;
+      return this;
+    }
+
     public SpoonRunner build() {
       checkNotNull(androidSdk, "SDK is required.");
       checkArgument(androidSdk.exists(), "SDK path does not exist.");
@@ -486,7 +505,8 @@ public final class SpoonRunner {
       return new SpoonRunner(title, androidSdk, testApk, otherApks, output, debug, noAnimations,
           adbTimeout, serials, skipDevices, shard, instrumentationArgs, className, methodName,
           testSize, allowNoDevices, testRunListeners, sequential, initScript, grantAll,
-          terminateAdb, codeCoverage, singleInstrumentationCall, clearAppDataBeforeEachTest);
+          terminateAdb, codeCoverage, singleInstrumentationCall, clearAppDataBeforeEachTest,
+          pullFilesDir, pullScreenshotsDir);
     }
   }
 

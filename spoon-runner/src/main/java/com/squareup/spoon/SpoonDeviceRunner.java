@@ -45,9 +45,6 @@ import static java.util.Collections.emptyMap;
 
 /** Represents a single device and the test configuration to be executed. */
 public final class SpoonDeviceRunner {
-  private static final String DEVICE_SCREENSHOT_DIR = "app_" + SPOON_SCREENSHOTS;
-  private static final String DEVICE_FILE_DIR = "app_" + SPOON_FILES;
-  private static final String[] DEVICE_DIRS = {DEVICE_SCREENSHOT_DIR, DEVICE_FILE_DIR};
   static final String TEMP_DIR = "work";
   static final String JUNIT_DIR = "junit-reports";
   static final String IMAGE_DIR = "image";
@@ -78,6 +75,8 @@ public final class SpoonDeviceRunner {
   private final List<ITestRunListener> testRunListeners;
   private final boolean grantAll;
   private final boolean clearAppDataBeforeEachTest;
+  private final String pullFilesDir;
+  private final String pullScreenshotsDir;
 
   /**
    * Create a test runner for a single device.
@@ -99,7 +98,8 @@ public final class SpoonDeviceRunner {
       SpoonInstrumentationInfo instrumentationInfo, Map<String, String> instrumentationArgs,
       String className, String methodName, IRemoteAndroidTestRunner.TestSize testSize,
       List<ITestRunListener> testRunListeners, boolean codeCoverage, boolean grantAll,
-      boolean singleInstrumentationCall, boolean clearAppDataBeforeEachTest) {
+      boolean singleInstrumentationCall, boolean clearAppDataBeforeEachTest,
+      String pullFilesDir, String pullScreenshotsDir) {
     this.testApk = testApk;
     this.otherApks = otherApks;
     this.serial = serial;
@@ -125,6 +125,8 @@ public final class SpoonDeviceRunner {
     this.testRunListeners = testRunListeners;
     this.grantAll = grantAll;
     this.clearAppDataBeforeEachTest = clearAppDataBeforeEachTest;
+    this.pullFilesDir = pullFilesDir;
+    this.pullScreenshotsDir = pullScreenshotsDir;
   }
 
   private void printStream(InputStream stream, String tag) throws IOException {
@@ -376,7 +378,8 @@ public final class SpoonDeviceRunner {
   }
 
   private void cleanScreenshotsDirectory(DeviceResult.Builder result) throws IOException {
-    File screenshotDir = new File(work, DEVICE_SCREENSHOT_DIR);
+    String dirName = pullScreenshotsDir.substring(pullScreenshotsDir.lastIndexOf('/') + 1);
+    File screenshotDir = new File(work, dirName);
     if (screenshotDir.exists()) {
       imageDir.mkdirs();
       handleImages(result, screenshotDir);
@@ -385,7 +388,8 @@ public final class SpoonDeviceRunner {
   }
 
   private void cleanFilesDirectory(DeviceResult.Builder result) throws IOException {
-    File testFilesDir = new File(work, DEVICE_FILE_DIR);
+    String dirName = pullFilesDir.substring(pullFilesDir.lastIndexOf('/') + 1);
+    File testFilesDir = new File(work, dirName);
     if (testFilesDir.exists()) {
       fileDir.mkdirs();
       handleFiles(result, testFilesDir);
@@ -501,7 +505,8 @@ public final class SpoonDeviceRunner {
 
   /** Download all files from a single device to the local machine. */
   private void pullDeviceFiles(IDevice device) throws Exception {
-    for (String dir : DEVICE_DIRS) {
+    List<String> deviceDirs = Arrays.asList(pullFilesDir, pullScreenshotsDir);
+    for (String dir : deviceDirs) {
       pullDirectory(device, dir);
     }
   }
@@ -576,18 +581,18 @@ public final class SpoonDeviceRunner {
   }
 
   private void cleanScreenshotsDirectoriesOnDevice(IDevice device) throws Exception {
-    FileEntry externalScreenShotDir = getDirectoryOnExternalStorage(device, DEVICE_SCREENSHOT_DIR);
+    FileEntry externalScreenShotDir = getDirectoryOnExternalStorage(device, pullScreenshotsDir);
     cleanDirectoryOnDevice(externalScreenShotDir.getFullPath(), device);
 
-    FileEntry internalScreenShotDir = getDirectoryOnInternalStorage(DEVICE_SCREENSHOT_DIR);
+    FileEntry internalScreenShotDir = getDirectoryOnInternalStorage(pullScreenshotsDir);
     cleanDirectoryOnDevice(internalScreenShotDir.getFullPath(), device);
   }
 
   private void cleanFilesDirectoriesOnDevice(IDevice device) throws Exception {
-    FileEntry externalFileDir = getDirectoryOnExternalStorage(device, DEVICE_FILE_DIR);
+    FileEntry externalFileDir = getDirectoryOnExternalStorage(device, pullFilesDir);
     cleanDirectoryOnDevice(externalFileDir.getFullPath(), device);
 
-    FileEntry internalFileDir = getDirectoryOnInternalStorage(DEVICE_FILE_DIR);
+    FileEntry internalFileDir = getDirectoryOnInternalStorage(pullFilesDir);
     cleanDirectoryOnDevice(internalFileDir.getFullPath(), device);
   }
 
