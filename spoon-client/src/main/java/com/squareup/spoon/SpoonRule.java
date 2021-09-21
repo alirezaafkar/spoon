@@ -1,9 +1,20 @@
 package com.squareup.spoon;
 
+import static android.graphics.Bitmap.CompressFormat.PNG;
+import static com.squareup.spoon.Chmod.chmodPlusR;
+import static com.squareup.spoon.Chmod.chmodPlusRWX;
+import static com.squareup.spoon.internal.Constants.NAME_SEPARATOR;
+import static com.squareup.spoon.internal.Constants.SPOON_FILES;
+import static com.squareup.spoon.internal.Constants.SPOON_SCREENSHOTS;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
+
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -14,20 +25,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.regex.Pattern;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-
-import static android.content.Context.MODE_WORLD_READABLE;
-import static android.graphics.Bitmap.CompressFormat.PNG;
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.LOLLIPOP;
-import static android.os.Environment.getExternalStorageDirectory;
-import static com.squareup.spoon.Chmod.chmodPlusR;
-import static com.squareup.spoon.Chmod.chmodPlusRWX;
-import static com.squareup.spoon.internal.Constants.NAME_SEPARATOR;
-import static com.squareup.spoon.internal.Constants.SPOON_FILES;
-import static com.squareup.spoon.internal.Constants.SPOON_SCREENSHOTS;
 
 /**
  * A test rule which captures screenshots and associates them with the test class and test method
@@ -92,17 +89,9 @@ public final class SpoonRule implements TestRule {
     }
   }
 
-  private static File obtainDirectory(Context context, String testClassName,
-      String testMethodName, String directoryName) {
-    File directory;
-    if (SDK_INT >= LOLLIPOP) {
-      // Use external storage.
-      directory = new File(getExternalStorageDirectory(), "app_" + directoryName);
-    } else {
-      // Use internal storage.
-      directory = context.getDir(directoryName, MODE_WORLD_READABLE);
-    }
-
+  public static File obtainDirectory(Context context, String testClassName,
+    String testMethodName, String directoryName) {
+    File directory = new File(context.getExternalFilesDir(null), "app_" + directoryName);
     File dirClass = new File(directory, testClassName);
     File dirMethod = new File(dirClass, testMethodName);
     createDir(dirMethod);
