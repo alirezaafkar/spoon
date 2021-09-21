@@ -69,7 +69,7 @@ public final class SpoonRule implements TestRule {
     return screenshotFile;
   }
 
-  private static void writeBitmapToFile(Bitmap bitmap, File file) {
+  public static void writeBitmapToFile(Bitmap bitmap, File file) {
     OutputStream fos = null;
     try {
       fos = new BufferedOutputStream(new FileOutputStream(file));
@@ -89,6 +89,10 @@ public final class SpoonRule implements TestRule {
     }
   }
 
+  public static File obtainDirectory(Context context, String testClassName, String testMethodName) {
+    return obtainDirectory(context, testClassName, testMethodName, SPOON_SCREENSHOTS);
+  }
+
   public static File obtainDirectory(Context context, String testClassName,
     String testMethodName, String directoryName) {
     File directory = new File(context.getExternalFilesDir(null), "app_" + directoryName);
@@ -97,7 +101,6 @@ public final class SpoonRule implements TestRule {
     createDir(dirMethod);
     return dirMethod;
   }
-
 
   public File save(final Context context, final File file) {
     if (!file.exists()) {
