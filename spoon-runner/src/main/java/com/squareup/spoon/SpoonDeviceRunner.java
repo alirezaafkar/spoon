@@ -503,7 +503,8 @@ public final class SpoonDeviceRunner {
 
   /** Download all files from a single device to the local machine. */
   private void pullDeviceFiles(IDevice device) throws Exception {
-    for (String dir : DEVICE_DIRS) {
+    List<String> deviceDirs = Arrays.asList(pullFilesDir, pullScreenshotsDir);
+    for (String dir : deviceDirs) {
       pullDirectory(device, dir);
     }
   }
