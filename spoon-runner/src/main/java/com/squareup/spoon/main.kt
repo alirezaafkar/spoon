@@ -32,6 +32,8 @@ fun main(vararg args: String) {
     setCodeCoverage(cli.coverage)
     setSingleInstrumentationCall(cli.singleInstrumentationCall)
     setClearAppDataBeforeEachTest(cli.clearAppDataBeforeEachTest)
+    setPullFilesDir(cli.pullFilesDir)
+    setPullScreenshotsDir(cli.pullScreenshotsDir)
   }.build()
 
   if (!runner.run() && !cli.alwaysZero) {

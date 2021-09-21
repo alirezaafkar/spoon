@@ -1,6 +1,7 @@
 package com.squareup.spoon
 
 import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner.TestSize
+import com.squareup.spoon.internal.Constants
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.SystemExitException
 import com.xenomachina.argparser.default
@@ -80,6 +81,12 @@ internal class CliArgs(parser: ArgParser) {
   val clearAppDataBeforeEachTest by parser.flagging("--clear-app-data",
       help = "Runs 'adb pm clear app.package.name' to clear app data before each test.")
 
+  val pullFilesDir by parser.storing("--files-dir",
+      "Pulls test files from this.").default(DEFAULT_PULL_FILES_DIR)
+
+  val pullScreenshotsDir by parser.storing("--screenshots-dir",
+      "Pulls test screenshots from this.").default(DEFAULT_PULL_SCREENSHOTS_DIR)
+
   private fun validateInstrumentationArgs() {
     val isTestRunPackageLimited = instrumentationArgs?.contains("package") ?: false
     val isTestRunClassLimited = instrumentationArgs?.contains("class") ?: false || className != null
@@ -92,4 +99,9 @@ internal class CliArgs(parser: ArgParser) {
   init {
     parser.force()
   }
+
+    companion object{
+        const val DEFAULT_PULL_FILES_DIR = "app_" + Constants.SPOON_FILES
+        const val DEFAULT_PULL_SCREENSHOTS_DIR = "app_" + Constants.SPOON_SCREENSHOTS
+    }
 }
