@@ -378,7 +378,8 @@ public final class SpoonDeviceRunner {
   }
 
   private void cleanScreenshotsDirectory(DeviceResult.Builder result) throws IOException {
-    File screenshotDir = new File(work, pullScreenshotsDir);
+    String dirName = pullScreenshotsDir.substring(pullScreenshotsDir.lastIndexOf('/') + 1);
+    File screenshotDir = new File(work, dirName);
     if (screenshotDir.exists()) {
       imageDir.mkdirs();
       handleImages(result, screenshotDir);
@@ -387,7 +388,8 @@ public final class SpoonDeviceRunner {
   }
 
   private void cleanFilesDirectory(DeviceResult.Builder result) throws IOException {
-    File testFilesDir = new File(work, pullFilesDir);
+    String dirName = pullFilesDir.substring(pullFilesDir.lastIndexOf('/') + 1);
+    File testFilesDir = new File(work, dirName);
     if (testFilesDir.exists()) {
       fileDir.mkdirs();
       handleFiles(result, testFilesDir);
