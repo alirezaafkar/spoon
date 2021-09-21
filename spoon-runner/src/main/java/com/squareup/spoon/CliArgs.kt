@@ -82,10 +82,10 @@ internal class CliArgs(parser: ArgParser) {
       help = "Runs 'adb pm clear app.package.name' to clear app data before each test.")
 
   val pullFilesDir by parser.storing("--files-dir",
-      "Pulls test files from this.").default(DEFAULT_PULL_FILES_DIR)
+      help = "Pulls test files from this.").default(DEFAULT_PULL_FILES_DIR)
 
   val pullScreenshotsDir by parser.storing("--screenshots-dir",
-      "Pulls test screenshots from this.").default(DEFAULT_PULL_SCREENSHOTS_DIR)
+      help = "Pulls test screenshots from this.").default(DEFAULT_PULL_SCREENSHOTS_DIR)
 
   private fun validateInstrumentationArgs() {
     val isTestRunPackageLimited = instrumentationArgs?.contains("package") ?: false
