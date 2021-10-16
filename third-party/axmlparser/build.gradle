@@ -4,11 +4,9 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
-  testCompile deps.junit
+  testImplementation deps.junit
 }
 
 tasks.withType(Checkstyle) {
   enabled = false
 }
-
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

@@ -16,33 +16,33 @@ internal class CliArgs(parser: ArgParser) {
       "Other APKs to install before test APK (e.g., main app or helper/buddy APKs)",
       transform = ::File)
 
-  val title by parser.storing("Execution title").default(null)
+  val title by parser.storing("Execution title").default<String?>(null)
 
   val instrumentationArgs by parser.option<MutableMap<String, String>>("-e", "--es",
       help = "Instrumentation runner arguments.", argNames = listOf("KEY", "VALUE")) {
     value.orElse { mutableMapOf<String, String>() }
         .apply { put(arguments.first(), arguments.last()) }
-  }.addValidator { validateInstrumentationArgs() }.default(null)
+  }.default<Map<String,String>?>(null).addValidator { validateInstrumentationArgs() }
 
   val className by parser.storing("--class-name", help = "Fully-qualified test class to run")
-      .default(null)
+      .default<String?>(null)
 
   val methodName by parser.storing("--method-name", help = "Method name inside --class-name to run")
-      .default(null)
+      .default<String?>(null)
 
   val size by parser.mapping(
       "--small" to TestSize.SMALL,
       "--medium" to TestSize.MEDIUM,
       "--large" to TestSize.LARGE,
       help = "Test size to run")
-      .default(null)
+      .default<TestSize?>(null)
 
   val output by parser.storing(
       "Output path. Defaults to spoon-output/ in the working directory if unset",
-      transform = ::File).default(null)
+      transform = ::File).default<File?>(null)
 
   val sdk by parser.storing("Android SDK path. Defaults to ANDROID_HOME if unset.",
-      transform = ::File).default(null)
+      transform = ::File).default<File?>(null)
 
   val alwaysZero by parser.flagging("--always-zero",
       help = "Always use 0 for the exit code regardless of execution failure")
@@ -53,7 +53,7 @@ internal class CliArgs(parser: ArgParser) {
   val sequential by parser.flagging("Execute tests sequentially (one device at a time)")
 
   val initScript by parser.storing("--init-script",
-      help = "Script file executed between each devices", transform = ::File).default(null)
+      help = "Script file executed between each devices", transform = ::File).default<File?>(null)
 
   val grantAll by parser.flagging("--grant-all",
       help = "Grant all runtime permissions during installation on M+")
@@ -62,7 +62,7 @@ internal class CliArgs(parser: ArgParser) {
 
   val adbTimeout by parser.storing("--adb-timeout",
       help = "Maximum execution time per test. Parsed by java.time.Duration.",
-      transform = Duration::parse).default(null)
+      transform = Duration::parse).default<Duration?>(null)
 
   val serials by parser.adding("--serial",
       help = "Device serials to use. If empty all devices will be used.")
