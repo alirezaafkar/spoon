@@ -10,3 +10,5 @@ dependencies {
 tasks.withType(Checkstyle) {
   enabled = false
 }
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

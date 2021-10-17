@@ -44,8 +44,8 @@ buildscript {
   ]
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:7.0.3'
-    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+    classpath 'com.android.tools.build:gradle:7.0.2'
+    classpath "gradle.plugin.com.github.johnrengelman:shadow:7.1.0"
     //classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.0.10'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
   }
